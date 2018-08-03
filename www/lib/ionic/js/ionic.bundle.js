@@ -53857,7 +53857,7 @@ function($rootScope, $state, $location, $window, $timeout, $ionicViewSwitcher, $
 
   var View = function() {};
   View.prototype.initialize = function(data) {
-		console.log('[test] #View# initialize, data :', data);
+		console.log('[test] #$ionicHistory# View.prototype.initialize, data :', data);
     if (data) {
       for (var name in data) this[name] = data[name];
       return this;
@@ -53977,7 +53977,7 @@ function($rootScope, $state, $location, $window, $timeout, $ionicViewSwitcher, $
   return {
 
     register: function(parentScope, viewLocals) {
-			console.log('[test] #$ionicHistory# register, arguments :', arguments);
+			console.log('[test] #$ionicHistory# register (parentScope, viewLocals) :', arguments);
 
       var currentStateId = getCurrentStateId(),
           hist = getHistory(parentScope),
@@ -59715,7 +59715,8 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
     var leavingView = extend({}, $ionicHistory.currentView());
 
     // register that a view is coming in and get info on how it should transition
-    var registerData = $ionicHistory.register($scope, viewLocals);
+		var registerData = $ionicHistory.register($scope, viewLocals);
+		console.log('[test] #$ionicNavView# register, registerData :', registerData);
 
     // update which direction
     self.update(registerData);
@@ -65359,7 +65360,7 @@ function($state, $ionicConfig) {
     transclude: true,
     controller: '$ionicNavView',
     compile: function(tElement, tAttrs, transclude) {
-			console.log('[test] #ionNavView# compile called !!');
+			console.log('[test] #ionNavView.directive# compile !!');
 
       // a nav view element is a container for numerous views
       tElement.addClass('view-container');
@@ -65377,10 +65378,10 @@ function($state, $ionicConfig) {
 
         // listen for $stateChangeSuccess
         $scope.$on('$stateChangeSuccess', function() {
-          updateView(false);
+          updateView(false, '$stateChangeSuccess');
         });
         $scope.$on('$viewContentLoading', function() {
-          updateView(false);
+          updateView(false, '$viewContentLoading');
         });
 
         // initial load, ready go
@@ -65390,11 +65391,13 @@ function($state, $ionicConfig) {
         function updateView(firstTime) {
           // get the current local according to the $state
 					var viewLocals = $state.$current && $state.$current.locals[viewData.name];
-					console.log('[test] #ionNavView# updateView, viewLocals :',viewLocals);
+					console.log('[test] #ionNavView.directive# updateView, firstTime :', [].join.call(arguments, ' - '));
+					console.log('[test] #ionNavView.directive# updateView, viewLocals :', viewLocals, !viewLocals?"\n----------":"");
 
           // do not update THIS nav-view if its is not the container for the given state
           // if the viewLocals are the same as THIS latestLocals, then nothing to do
           if (!viewLocals || (!firstTime && viewLocals === latestLocals)) return;
+					console.log('[test] #ionNavView.directive# updateView -> `navViewCtrl.register`\n----------');
 
           // update the latestLocals
           latestLocals = viewLocals;
